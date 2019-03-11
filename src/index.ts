@@ -199,7 +199,7 @@ class ServerlessOfflineSns {
         this.debug(process.cwd());
         this.debug("creating handler for " + fnName);
         const funOptions = getFunctionOptions(fn, fnName, this.location);
-        var handler = createHandler(funOptions, {skipCacheInvalidation: this.serverless.config.skipCacheInvalidation});
+        const handler = createHandler(funOptions, {skipCacheInvalidation: this.serverless.config.skipCacheInvalidation});
         return handler;
     }
 
