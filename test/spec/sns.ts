@@ -149,6 +149,9 @@ describe("test", () => {
         plugin = new ServerlessOfflineSns(createServerless(accountId, "envHandler"), {});
         const snsAdapter = await plugin.start();
         await snsAdapter.publish(`arn:aws:sns:us-east-1:${accountId}:test-topic`, "{}");
+
+console.log(state.getResult);
+
         expect(await state.getResult()).to.eq("MY_VAL");
     });
 
@@ -283,6 +286,7 @@ const createServerless = (accountId: number, handlerName: string = "pongHandler"
                     events: [{
                         sns: `arn:aws:sns:us-east-1:${accountId}:test-topic`,
                     }],
+                    runtime: "nodejs8.10",
                 },
                 pong2: {
                     handler: "test/mock/handler." + handlerName,
@@ -291,6 +295,7 @@ const createServerless = (accountId: number, handlerName: string = "pongHandler"
                             arn: `arn:aws:sns:us-east-1:${accountId}:test-topic`,
                         },
                     }],
+                    runtime: "nodejs8.10",
                 },
                 pong3: {
                     name: "this-is-auto-created-when-using-serverless",
@@ -303,6 +308,7 @@ const createServerless = (accountId: number, handlerName: string = "pongHandler"
                             arn: `arn:aws:sns:us-east-1:${accountId}:test-topic-2`,
                         },
                     }],
+                    runtime: "nodejs8.10",
                 },
                 pong4: {
                     handler: "test/mock/handler." + handlerName,
@@ -311,6 +317,7 @@ const createServerless = (accountId: number, handlerName: string = "pongHandler"
                             arn: `arn:aws:sns:us-east-1:#{AWS::AccountId}:test-topic-3`,
                         },
                     }],
+                    runtime: "nodejs6.10",
                 },
                 pong5: {
                     handler: "test/mock/handler." + handlerName,
@@ -319,6 +326,7 @@ const createServerless = (accountId: number, handlerName: string = "pongHandler"
                             arn: `arn:aws:sns:us-east-1:#{AWS::AccountId}:test-topic-async`,
                         },
                     }],
+                    runtime: "python3.7",
                 },
             },
         },
@@ -361,6 +369,7 @@ const createServerlessCacheInvalidation = (accountId: number, handlerName: strin
                     events: [{
                         sns: `arn:aws:sns:us-west-2:${accountId}:test-topic`,
                     }],
+                    runtime: "nodejs8.10",
                 },
             },
         },
@@ -400,6 +409,7 @@ const createServerlessMultiDot = (accountId: number, handlerName: string = "pong
                     events: [{
                         sns: `arn:aws:sns:us-west-2:${accountId}:multi-dot-topic`,
                     }],
+                    runtime: "nodejs8.10",
                 },
             },
         },
@@ -437,6 +447,7 @@ const createServerlessBad = (accountId: number) => {
                             topicArn: `arn:aws:sns:us-east-1:${accountId}:test-topic`,
                         },
                     }],
+                    runtime: "nodejs8.10",
                 },
             },
         },
@@ -484,6 +495,7 @@ const createServerlessWithFilterPolicies = (accountId: number, handlerName: stri
                             },
                         },
                     }],
+                    runtime: "nodejs8.10",
                 },
                 pong2: {
                     name: "some-name2",
@@ -498,6 +510,7 @@ const createServerlessWithFilterPolicies = (accountId: number, handlerName: stri
                             },
                         },
                     }],
+                    runtime: "nodejs8.10",
                 },
             },
         },

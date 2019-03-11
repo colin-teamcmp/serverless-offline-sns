@@ -7,6 +7,7 @@ import { SNSServer } from "./sns-server";
 import * as _ from "lodash";
 import * as AWS from "aws-sdk";
 import { resolve } from "path";
+import { createHandler, getFunctionOptions } from "serverless-offline/src/functionHelper.js";
 
 class ServerlessOfflineSns {
     private config: any;
@@ -165,16 +166,16 @@ class ServerlessOfflineSns {
             this.log(`Creating topic: "${topicName}" for fn "${fnName}"`);
             const data = await this.snsAdapter.createTopic(topicName);
             this.debug("topic: " + JSON.stringify(data));
-            await this.snsAdapter.subscribe(fn, () => this.createHandler(fn), data.TopicArn, snsConfig);
+            await this.snsAdapter.subscribe(fn, () => this.createMyHandler(fn, fnName), data.TopicArn, snsConfig);
         } else if (typeof snsConfig.arn === "string") {
-            await this.snsAdapter.subscribe(fn, () => this.createHandler(fn), snsConfig.arn, snsConfig);
+            await this.snsAdapter.subscribe(fn, () => this.createMyHandler(fn, fnName), snsConfig.arn, snsConfig);
         } else {
             this.log("unsupported config: " + snsConfig);
             return Promise.resolve("unsupported config: " + snsConfig);
         }
     }
 
-    public createHandler(fn) {
+    public createMyHandler(fn, fnName) {
 
         // use the main serverless config since this behavior is already supported there
         if (!this.serverless.config.skipCacheInvalidation || Array.isArray(this.serverless.config.skipCacheInvalidation)) {
@@ -196,12 +197,20 @@ class ServerlessOfflineSns {
         }
 
         this.debug(process.cwd());
-        const handlerFnNameIndex = fn.handler.lastIndexOf(".");
-        const handlerPath = fn.handler.substring(0, handlerFnNameIndex);
-        const handlerFnName = fn.handler.substring(handlerFnNameIndex + 1);
-        const fullHandlerPath = resolve(this.location, handlerPath);
-        this.debug("require(" + fullHandlerPath + ")[" + handlerFnName + "]");
-        const handler = require(fullHandlerPath)[handlerFnName];
+
+        const {location = "."} = (
+            this.serverless.service && 
+            this.serverless.service.custom && 
+            this.serverless.service.custom["serverless-offline"]
+        ) || {};
+
+        this.debug("creating handler for " + fnName);
+
+        const funOptions = getFunctionOptions(fn, fnName, this.location);
+        console.log(fnName);
+        console.log(funOptions);
+        const handler = createHandler(funOptions, {});
+        console.log(handler.toString());
         return handler;
     }
 
