@@ -149,9 +149,6 @@ describe("test", () => {
         plugin = new ServerlessOfflineSns(createServerless(accountId, "envHandler"), {});
         const snsAdapter = await plugin.start();
         await snsAdapter.publish(`arn:aws:sns:us-east-1:${accountId}:test-topic`, "{}");
-
-console.log(state.getResult);
-
         expect(await state.getResult()).to.eq("MY_VAL");
     });
 
